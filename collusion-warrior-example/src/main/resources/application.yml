@@ -1,0 +1,18 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: elasticsearch-study
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.99:3306/elasticsearch_study?serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+    username: root
+    password:
+  jpa:
+    show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
