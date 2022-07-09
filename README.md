@@ -30,40 +30,49 @@ public interface StudentRepository extends JpaRepository<Student,Long> , EsSyncR
 
 ### 3.（可选）自定义es的领域对象，默认会生成一个数据库领域对象完全一样的es领域对象
 
+## 兼容性
+我自己测试过的
+
+| **Spring Data Elasticsearch** | **Elasticsearch** | **Spring Framework** | **Spring Boot** |
+| ----------------------------- | ----------------- | -------------------- | --------------- |
+| 4.4.x                         | 7.17.3            | 5.3.x                | 2.7.x           |
+
+如果不是这个版本的es可以查看spring官方的兼容性<br/>
+https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#preface.versions
 
 ## 注意事项
 1. elasticsearch的索引名是jpa数据库领域对象的类名转下划线命名法
-   1. 支持自动创建索引，但并不是很完善，生产环境建议还是手动创建索引
-      1. 目前jpa数据库领域对象，还需要自己写领域事件通知，后续会自动生成<br/>
-          例如
-          ```java
-          @Getter
-          @Setter
-          @ToString
-          @Entity
-      @Table(name = "student")
-      @EsEntity(StudentEsDto.class)
-      public class Student {
+2. 支持自动创建索引，但并不是很完善，生产环境建议还是手动创建索引
+3. 目前jpa数据库领域对象，还需要自己写领域事件通知，后续会自动生成<br/>
+    例如
+    ```java
+    @Getter
+    @Setter
+    @ToString
+    @Entity
+    @Table(name = "student")
+    @EsEntity(StudentEsDto.class)
+    public class Student {
 
-          @Id
-          @GeneratedValue(strategy = GenerationType.IDENTITY)
-          private Long id;
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
     
-          /* 省略一些业务字段 */
+       /* 省略一些业务字段 */
 
-          // 使用集合类注册事件列表
-          @DomainEvents
-          Collection<Object> domainEvents(){
-              List<Object> events= new ArrayList<>();
-              events.add(this);
-              return events;
-          }
-
-          //所有事件发布完成后调用，一般用来清空事件列表
-          @AfterDomainEventPublication
-          void callbackMethod() {
-              domainEvents().clear();
-          }
-
+       // 使用集合类注册事件列表
+       @DomainEvents
+       Collection<Object> domainEvents(){
+           List<Object> events= new ArrayList<>();
+           events.add(this);
+           return events;
        }
-          ```
+
+       //所有事件发布完成后调用，一般用来清空事件列表
+       @AfterDomainEventPublication
+       void callbackMethod() {
+           domainEvents().clear();
+       }
+
+    }
+       ```
