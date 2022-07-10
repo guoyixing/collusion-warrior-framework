@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Document(indexName = "spring-data-test-student1")
+@Document(indexName = "spring-data-test-student")
 public class StudentEsDto {
 
     @Id
@@ -36,6 +36,4 @@ public class StudentEsDto {
 
     @Field(name = "create_time", type = FieldType.Date)
     private Date createTime;
-
-    private List<HobbyEsDto> hobby;
 }

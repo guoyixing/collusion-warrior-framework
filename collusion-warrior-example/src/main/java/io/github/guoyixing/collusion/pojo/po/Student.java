@@ -25,7 +25,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "student")
-@EsEntity(StudentEsDto.class)
+//@EsEntity(StudentEsDto.class)
 public class Student {
 
     @Id

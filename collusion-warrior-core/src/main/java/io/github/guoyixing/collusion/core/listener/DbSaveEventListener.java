@@ -6,7 +6,7 @@ import io.github.guoyixing.collusion.core.generator.EsEntityGenerator;
 import io.github.guoyixing.collusion.core.handler.AssignmentHandler;
 import io.github.guoyixing.collusion.core.handler.DefaultAssignmentHandler;
 import io.github.guoyixing.collusion.core.handler.EsIndexHandler;
-import io.github.guoyixing.collusion.core.handler.EsRepositoryHandler;
+import io.github.guoyixing.collusion.core.handler.RepositoryHandler;
 import io.github.guoyixing.collusion.enums.OperationType;
 import io.github.guoyixing.collusion.error.EsSyncException;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +27,12 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @SuppressWarnings("all")
 public class DbSaveEventListener {
 
-    private final EsRepositoryHandler esRepositoryHandler;
+    private final RepositoryHandler repositoryHandler;
 
     private final EsIndexHandler esIndexHandler;
 
-    public DbSaveEventListener(EsRepositoryHandler esRepositoryHandler, EsIndexHandler esIndexHandler) {
-        this.esRepositoryHandler = esRepositoryHandler;
+    public DbSaveEventListener(RepositoryHandler repositoryHandler, EsIndexHandler esIndexHandler) {
+        this.repositoryHandler = repositoryHandler;
         this.esIndexHandler = esIndexHandler;
     }
 
@@ -67,7 +67,7 @@ public class DbSaveEventListener {
                 Object assignmentValue = assignmentHandler.assignment(obj, esClass);
 
                 //获取esRepository,如果不存在就生成一个
-                ElasticsearchRepository elasticsearchRepository = esRepositoryHandler.getElasticsearchRepository(assignmentValue.getClass());
+                ElasticsearchRepository elasticsearchRepository = repositoryHandler.getElasticsearchRepository(assignmentValue.getClass());
                 elasticsearchRepository.save(assignmentValue);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new EsSyncException(assignmentHandlerClazz.getName() + "赋值器初始化失败", e);

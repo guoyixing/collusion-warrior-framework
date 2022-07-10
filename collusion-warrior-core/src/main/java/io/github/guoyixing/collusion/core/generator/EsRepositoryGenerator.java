@@ -67,12 +67,9 @@ public class EsRepositoryGenerator {
         ctClass.setGenericSignature(cs.encode());
 
         try {
-            ctClass.writeFile("G:\\");
             return (Class<? extends Repository>) ctClass.toClass();
         } catch (CannotCompileException e) {
             throw new RuntimeException("生成EsRepository失败", e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

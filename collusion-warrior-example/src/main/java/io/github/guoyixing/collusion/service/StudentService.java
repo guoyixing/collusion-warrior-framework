@@ -17,7 +17,6 @@ public interface StudentService {
     /**
      * 删除一个学生
      * @param id 学生id
-     * @return 学生
      */
     void del(Long id);
 }

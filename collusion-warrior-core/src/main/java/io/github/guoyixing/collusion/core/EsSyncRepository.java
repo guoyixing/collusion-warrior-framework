@@ -2,6 +2,9 @@ package io.github.guoyixing.collusion.core;
 
 import io.github.guoyixing.collusion.enums.OperationType;
 import io.github.guoyixing.collusion.error.EsSyncException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -71,14 +71,11 @@ public class EsEntityGenerator {
                     ctClass.addMethod(CtNewMethod.setter("set" + methodName, ctField));
                     ctClass.addMethod(CtNewMethod.getter("get" + methodName, ctField));
                 }
-                ctClass.writeFile("G:\\");
                 Class<?> esClass = ctClass.toClass();
                 clazz.put(dbClass, esClass);
                 return esClass;
             } catch (CannotCompileException e) {
                 throw new RuntimeException("生成Es对象类型失败", e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
     }

@@ -1,6 +1,8 @@
 package io.github.guoyixing.collusion.core.handler;
 
 import io.github.guoyixing.collusion.core.generator.EsRepositoryGenerator;
+import org.springframework.aop.framework.AdvisedSupport;
+import org.springframework.aop.framework.AopProxy;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -10,8 +12,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.support.ElasticsearchRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 通过生成的esRepository接口，创建真正实现对象，注入到spring的容器中
@@ -20,9 +27,14 @@ import org.springframework.stereotype.Component;
  * @date 8/7/2022 下午11:16
  */
 @Component
-public class EsRepositoryHandler implements ApplicationContextAware {
+public class RepositoryHandler implements ApplicationContextAware {
 
     private final static Object sync = new Object();
+
+    /**
+     * 用来记录db对象与JpaRepository的关系，在重写save和delete方法的时候，可以用此获取到正确的Repository
+     */
+    private final static Map<Class<?>, Class<?>> entityAndJpaRepository = new ConcurrentHashMap<>();
 
     /**
      * spring的容器
@@ -57,6 +69,36 @@ public class EsRepositoryHandler implements ApplicationContextAware {
                 defaultListableBeanFactory.registerSingleton(esClass.getName(), repository);
             }
             return repository;
+        }
+    }
+
+    /**
+     * 将db对象与JpaRepository的关系储存下来
+     *
+     * @param dbEntity      db对象
+     * @param jpaRepository 对应的jpaRepository
+     */
+    public void cacheJpaRepository(Class<?> dbEntity, Class<?> jpaRepository) {
+        entityAndJpaRepository.put(dbEntity, jpaRepository);
+    }
+
+    /**
+     * 通过db对象获取JpaRepository
+     *
+     * @param dbEntity db对象
+     */
+    public JpaRepository<?, ?> getJpaRepository(Class<?> dbEntity) {
+        try {
+            JpaRepository<?, ?> jpaRepository = (JpaRepository<?, ?>) applicationContext.getBean(entityAndJpaRepository.get(dbEntity));
+            Field h = jpaRepository.getClass().getSuperclass().getDeclaredField("h");
+            h.setAccessible(true);
+            AopProxy aopProxy = (AopProxy) h.get(jpaRepository);
+            Field advised = aopProxy.getClass().getDeclaredField("advised");
+            advised.setAccessible(true);
+
+            return (JpaRepository<?, ?>) ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

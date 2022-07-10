@@ -1,9 +1,8 @@
-package io.github.guoyixing.collusion.service;
+package io.github.guoyixing.collusion.service.impl;
 
-import io.github.guoyixing.collusion.pojo.po.Hobby;
 import io.github.guoyixing.collusion.pojo.po.Student;
-import io.github.guoyixing.collusion.repository.db.HobbyRepository;
 import io.github.guoyixing.collusion.repository.db.StudentRepository;
+import io.github.guoyixing.collusion.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
