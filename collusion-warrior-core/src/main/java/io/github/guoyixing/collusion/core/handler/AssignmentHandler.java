@@ -15,6 +15,6 @@ public interface AssignmentHandler<T, R> {
      * @param t db的对象
      * @return Es的对象
      */
-    R assignment(T t,Class<R> rClass);
+    R assignment(T t, Class<R> rClass);
 
 }

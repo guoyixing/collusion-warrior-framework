@@ -18,13 +18,13 @@ public class DefaultAssignmentHandler<R> implements AssignmentHandler<Object, R>
      * @return Es的对象
      */
     @Override
-    public R assignment(Object source,Class<R> rClass) {
+    public R assignment(Object source, Class<R> rClass) {
         try {
             R result = rClass.newInstance();
-            BeanUtils.copyProperties(source,result);
+            BeanUtils.copyProperties(source, result);
             return result;
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new EsSyncException(source.getClass().getName()+"对应的Es对象创建失败", e);
+            throw new EsSyncException(source.getClass().getName() + "对应的Es对象创建失败", e);
         }
     }
 

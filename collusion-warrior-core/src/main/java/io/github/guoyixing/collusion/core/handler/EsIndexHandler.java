@@ -42,7 +42,7 @@ public class EsIndexHandler implements ApplicationContextAware {
         //TODO 这里要冲配置里面读取
         Settings settings = indexOperations.createSettings(esClass);
         Document mapping = indexOperations.createMapping(esClass);
-        if (!indexOperations.exists() && indexOperations.create(settings,mapping)) {
+        if (!indexOperations.exists() && indexOperations.create(settings, mapping)) {
             existsIndex.add(esClass);
         }
         return indexOperations;

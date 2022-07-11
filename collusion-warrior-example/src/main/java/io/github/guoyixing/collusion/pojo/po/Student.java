@@ -1,14 +1,10 @@
 package io.github.guoyixing.collusion.pojo.po;
 
-import io.github.guoyixing.collusion.core.EsSyncRepository;
-import io.github.guoyixing.collusion.core.annotation.EsEntity;
-import io.github.guoyixing.collusion.pojo.es.StudentEsDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -44,8 +40,8 @@ public class Student {
 
     // 使用集合类注册事件列表
     @DomainEvents
-    Collection<Object> domainEvents(){
-        List<Object> events= new ArrayList<>();
+    Collection<Object> domainEvents() {
+        List<Object> events = new ArrayList<>();
         events.add(this);
         return events;
     }

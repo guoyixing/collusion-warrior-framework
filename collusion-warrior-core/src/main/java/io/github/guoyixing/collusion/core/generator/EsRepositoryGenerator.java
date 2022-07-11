@@ -10,7 +10,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.repository.Repository;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**

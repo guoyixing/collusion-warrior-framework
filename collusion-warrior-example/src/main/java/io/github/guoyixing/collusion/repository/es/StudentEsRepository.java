@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2022/6/29 16:17
  */
 @Repository
-public interface StudentEsRepository extends ElasticsearchRepository<StudentEsDto,Long> {
+public interface StudentEsRepository extends ElasticsearchRepository<StudentEsDto, Long> {
     List<StudentEsDto> getByName(String name);
 
     List<StudentEsDto> getByNameLike(String name);

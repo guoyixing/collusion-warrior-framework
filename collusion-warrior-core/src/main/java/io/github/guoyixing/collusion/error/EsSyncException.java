@@ -4,7 +4,7 @@ package io.github.guoyixing.collusion.error;
  * @author 敲代码的旺财
  * @date 2022/7/8 9:55
  */
-public class EsSyncException extends RuntimeException{
+public class EsSyncException extends RuntimeException {
 
     public EsSyncException() {
     }

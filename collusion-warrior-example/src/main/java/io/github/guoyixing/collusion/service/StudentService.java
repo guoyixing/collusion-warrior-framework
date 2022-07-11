@@ -9,6 +9,7 @@ import io.github.guoyixing.collusion.pojo.po.Student;
 public interface StudentService {
     /**
      * 添加一个学生
+     *
      * @param student 学生信息
      * @return 学生
      */
@@ -16,6 +17,7 @@ public interface StudentService {
 
     /**
      * 删除一个学生
+     *
      * @param id 学生id
      */
     void del(Long id);

@@ -45,8 +45,9 @@ public class RepositoryListener implements ApplicationListener<ApplicationStarte
         for (JpaRepository value : beansOfType.values()) {
             Class<?> beanClass = value.getClass();
             //循环这个对象的所有接口，判断是否实现了EsSyncRepository接口，即通过判断是否实现了EsSyncRepository接口，来找到我们自己写的Repository接口，
-            jpaRepositoryFor: for (Class<?> repository : beanClass.getInterfaces()) {
-                if (EsSyncRepository.class.isAssignableFrom(repository)){
+            jpaRepositoryFor:
+            for (Class<?> repository : beanClass.getInterfaces()) {
+                if (EsSyncRepository.class.isAssignableFrom(repository)) {
                     //然后通过循环获取到上面的EsSyncRepository接口
                     for (Type genericInterface : repository.getGenericInterfaces()) {
                         if (genericInterface.getTypeName().startsWith(EsSyncRepository.class.getTypeName())) {

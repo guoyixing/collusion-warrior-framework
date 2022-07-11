@@ -27,8 +27,8 @@ public class Hobby {
 
     // 使用集合类注册事件列表
     @DomainEvents
-    Collection<Object> domainEvents(){
-        List<Object> events= new ArrayList<>();
+    Collection<Object> domainEvents() {
+        List<Object> events = new ArrayList<>();
         events.add(this);
         return events;
     }

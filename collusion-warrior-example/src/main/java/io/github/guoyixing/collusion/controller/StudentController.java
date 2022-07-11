@@ -19,12 +19,12 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public Student save(@RequestBody Student student){
+    public Student save(@RequestBody Student student) {
         return studentService.save(student);
     }
 
     @DeleteMapping("/{id}")
-    public void del(@PathVariable("id")Long id){
+    public void del(@PathVariable("id") Long id) {
         studentService.del(id);
     }
 

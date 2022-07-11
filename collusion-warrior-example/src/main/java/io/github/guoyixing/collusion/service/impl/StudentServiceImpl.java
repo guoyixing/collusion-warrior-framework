@@ -24,6 +24,7 @@ public class StudentServiceImpl implements StudentService {
 
     /**
      * 添加一个学生
+     *
      * @param student 学生信息
      * @return 学生
      */
@@ -35,6 +36,7 @@ public class StudentServiceImpl implements StudentService {
 
     /**
      * 删除一个学生
+     *
      * @param id 学生id
      * @return 学生
      */
