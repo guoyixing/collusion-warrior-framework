@@ -135,4 +135,3 @@ https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#pr
 ## 注意事项
 1. 自动生成的elasticsearch索引，索引名是jpa数据库领域对象的类名转下划线命名法
 2. 支持自动创建索引，但并不是很完善，生产环境建议还是手动创建索引
-3. delete方法还没完成

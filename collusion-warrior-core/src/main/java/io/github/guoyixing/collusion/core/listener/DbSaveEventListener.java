@@ -58,21 +58,26 @@ public class DbSaveEventListener {
 
         //判断这个对象索引是否存在如果不存在就插入
         esIndexHandler.existsAndCreate(esClass);
+        Object assignmentValue;
+        try {
+            //通过复制器进行赋值
+            AssignmentHandler assignmentHandler = (AssignmentHandler) assignmentHandlerClazz.newInstance();
+            assignmentValue = assignmentHandler.assignment(obj, esClass);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new EsSyncException(assignmentHandlerClazz.getName() + "赋值器初始化失败", e);
+        }
 
-
+        //获取esRepository,如果不存在就生成一个
+        ElasticsearchRepository elasticsearchRepository = repositoryHandler.getElasticsearchRepository(assignmentValue.getClass());
         OperationType type = EsSyncRepository.getThreadLocal(obj);
-        if (type.equals(OperationType.SAVE)) {
-            try {
-                AssignmentHandler assignmentHandler = (AssignmentHandler) assignmentHandlerClazz.newInstance();
-                Object assignmentValue = assignmentHandler.assignment(obj, esClass);
 
-                //获取esRepository,如果不存在就生成一个
-                ElasticsearchRepository elasticsearchRepository = repositoryHandler.getElasticsearchRepository(assignmentValue.getClass());
-                elasticsearchRepository.save(assignmentValue);
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new EsSyncException(assignmentHandlerClazz.getName() + "赋值器初始化失败", e);
-            }
-
+        if (OperationType.SAVE.equals(type)) {
+            elasticsearchRepository.save(assignmentValue);
+        } else if (OperationType.DELETE.equals(type)) {
+            elasticsearchRepository.delete(assignmentValue);
+        } else {
+            log.warn("无法识别的监听");
+            return;
         }
         EsSyncRepository.delThreadLocal(obj);
         log.debug("数据库操作类型{}", type);
