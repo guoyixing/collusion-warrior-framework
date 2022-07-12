@@ -1,8 +1,10 @@
 package io.github.guoyixing.collusion.core.handler;
 
 import io.github.guoyixing.collusion.core.generator.EsRepositoryGenerator;
+import io.github.guoyixing.collusion.utils.ProxyUtils;
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -88,17 +90,18 @@ public class RepositoryHandler implements ApplicationContextAware {
      * @param dbEntity db对象
      */
     public JpaRepository<?, ?> getJpaRepository(Class<?> dbEntity) {
-        try {
-            JpaRepository<?, ?> jpaRepository = (JpaRepository<?, ?>) applicationContext.getBean(entityAndJpaRepository.get(dbEntity));
-            Field h = jpaRepository.getClass().getSuperclass().getDeclaredField("h");
-            h.setAccessible(true);
-            AopProxy aopProxy = (AopProxy) h.get(jpaRepository);
-            Field advised = aopProxy.getClass().getDeclaredField("advised");
-            advised.setAccessible(true);
-
-            return (JpaRepository<?, ?>) ((AdvisedSupport) advised.get(aopProxy)).getTargetSource().getTarget();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        JpaRepository<?, ?> jpaRepository = (JpaRepository<?, ?>) applicationContext.getBean(entityAndJpaRepository.get(dbEntity));
+        //jdk代理对象处理
+        if (AopUtils.isJdkDynamicProxy(jpaRepository)) {
+            return ProxyUtils.getJdkProxyTarget(jpaRepository);
         }
+
+        //cglib代理对象处理
+        if (AopUtils.isCglibProxy(jpaRepository)) {
+            return ProxyUtils.getCglibProxyTarget(jpaRepository);
+        }
+        return jpaRepository;
     }
+
+
 }
