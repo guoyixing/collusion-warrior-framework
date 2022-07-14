@@ -2,11 +2,7 @@ package io.github.guoyixing.collusion.core.listener;
 
 import io.github.guoyixing.collusion.core.EsSyncRepository;
 import io.github.guoyixing.collusion.core.annotation.EsEntity;
-import io.github.guoyixing.collusion.core.generator.EsEntityGenerator;
-import io.github.guoyixing.collusion.core.handler.AssignmentHandler;
-import io.github.guoyixing.collusion.core.handler.DefaultAssignmentHandler;
-import io.github.guoyixing.collusion.core.handler.EsIndexHandler;
-import io.github.guoyixing.collusion.core.handler.RepositoryHandler;
+import io.github.guoyixing.collusion.core.handler.*;
 import io.github.guoyixing.collusion.enums.OperationType;
 import io.github.guoyixing.collusion.error.EsSyncException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +21,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Component
 @SuppressWarnings("all")
-public class DbSaveEventListener {
+public class DbEventListener {
 
     private final RepositoryHandler repositoryHandler;
 
     private final EsIndexHandler esIndexHandler;
 
-    public DbSaveEventListener(RepositoryHandler repositoryHandler, EsIndexHandler esIndexHandler) {
+    public DbEventListener(RepositoryHandler repositoryHandler, EsIndexHandler esIndexHandler) {
         this.repositoryHandler = repositoryHandler;
         this.esIndexHandler = esIndexHandler;
     }
@@ -47,8 +43,8 @@ public class DbSaveEventListener {
         //转换器类型
         Class<?> assignmentHandlerClazz;
         if (annotation == null) {
-            //自动生成es的类型
-            esClass = EsEntityGenerator.generate(clazz);
+            //自动生成es的类
+            esClass = EsEntityHandler.getEsEntity(clazz);
             assignmentHandlerClazz = DefaultAssignmentHandler.class;
         } else {
             //获取需要转换的ES类型

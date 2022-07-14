@@ -11,8 +11,10 @@ import org.springframework.data.annotation.Id;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 当没有指定Es对象的时候，动态生成es对象
@@ -22,9 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class EsEntityGenerator {
 
-    private final static Object sync = new Object();
-    private static Map<Class<?>, Class<?>> clazz = new ConcurrentHashMap<>();
-
     /**
      * 根据db对象生成es对象
      *
@@ -33,49 +32,40 @@ public class EsEntityGenerator {
      */
     public static Class<?> generate(Class<?> dbClass) {
 
-        if (clazz.get(dbClass) != null) {
-            return clazz.get(dbClass);
-        }
-        synchronized (sync) {
-            if (clazz.get(dbClass) != null) {
-                return clazz.get(dbClass);
-            }
-            //生成的类的类名
-            String className = dbClass.getCanonicalName() + "_EsDto";
 
-            ClassPool pool = ClassPool.getDefault();
-            CtClass ctClass = pool.makeClass(className);
+        //生成的类的类名
+        String className = dbClass.getCanonicalName() + "_EsDto";
 
-            ClassFile classFile = ctClass.getClassFile();
-            ConstPool constPool = classFile.getConstPool();
+        ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass = pool.makeClass(className);
 
-            //类添加注解
-            addAnnotation(dbClass, classFile, constPool);
+        ClassFile classFile = ctClass.getClassFile();
+        ConstPool constPool = classFile.getConstPool();
 
-            List<CtField> ctFields = new ArrayList<>();
-            //根据db对象属性生成的Es对象属性
-            for (Field field : getDbAllField(dbClass)) {
-                field.setAccessible(true);
-                try {
-                    //添加属性
-                    ctFields.add(addCtField(pool, ctClass, constPool, field));
-                } catch (CannotCompileException | NotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        //类添加注解
+        addAnnotation(dbClass, classFile, constPool);
+
+        List<CtField> ctFields = new ArrayList<>();
+        //根据db对象属性生成的Es对象属性
+        for (Field field : getDbAllField(dbClass)) {
+            field.setAccessible(true);
             try {
-                for (CtField ctField : ctFields) {
-                    //生成对应的getter/setter方法
-                    String methodName = ctField.getName().substring(0, 1).toUpperCase(Locale.ROOT) + ctField.getName().substring(1);
-                    ctClass.addMethod(CtNewMethod.setter("set" + methodName, ctField));
-                    ctClass.addMethod(CtNewMethod.getter("get" + methodName, ctField));
-                }
-                Class<?> esClass = ctClass.toClass();
-                clazz.put(dbClass, esClass);
-                return esClass;
-            } catch (CannotCompileException e) {
-                throw new RuntimeException("生成Es对象类型失败", e);
+                //添加属性
+                ctFields.add(addCtField(pool, ctClass, constPool, field));
+            } catch (CannotCompileException | NotFoundException e) {
+                throw new RuntimeException(e);
             }
+        }
+        try {
+            for (CtField ctField : ctFields) {
+                //生成对应的getter/setter方法
+                String methodName = ctField.getName().substring(0, 1).toUpperCase(Locale.ROOT) + ctField.getName().substring(1);
+                ctClass.addMethod(CtNewMethod.setter("set" + methodName, ctField));
+                ctClass.addMethod(CtNewMethod.getter("get" + methodName, ctField));
+            }
+            return ctClass.toClass();
+        } catch (CannotCompileException e) {
+            throw new RuntimeException("生成Es对象类型失败", e);
         }
     }
 
